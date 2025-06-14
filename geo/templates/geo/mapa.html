@@ -1,0 +1,121 @@
+{% extends 'donaredapp/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+<style>
+    #map {
+        height: 600px;
+        width: 100%;
+    }
+    .filter-container {
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+    }
+    .marker-popup {
+        max-width: 200px;
+    }
+    .marker-popup img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        margin-bottom: 10px;
+    }
+    .marker-popup h3 {
+        margin: 0 0 10px 0;
+        font-size: 16px;
+    }
+    .marker-popup p {
+        margin: 0 0 10px 0;
+        font-size: 14px;
+    }
+    .marker-popup .btn {
+        width: 100%;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <section class="map-title-section">
+        <h1 class="mapa-hamburguesa">Mapa de Donaciones</h1>
+    </section>
+    <section class="map-filter-section">
+        <div class="filter-container filter-center">
+            <h4>Filtrar por Categoría</h4>
+            <select id="category-filter" class="form-select">
+                <option value="">Todas las categorías</option>
+                {% for categoria in categorias %}
+                <option value="{{ categoria.id }}">{{ categoria.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </section>
+</div>
+<section class="map-section-full">
+    <div class="map-container-full">
+        <div id="map"></div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var map = L.map('map', {
+            center: [-34.6037, -58.3816],
+            zoom: 13,
+            zoomControl: true,
+            scrollWheelZoom: true
+        });
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(map);
+        setTimeout(function() { map.invalidateSize(); }, 300);
+        var markers = L.markerClusterGroup({
+            maxClusterRadius: 50,
+            spiderfyOnMaxZoom: true,
+            showCoverageOnHover: false,
+            zoomToBoundsOnClick: true
+        });
+        function loadMarkers(categoryId = '') {
+            markers.clearLayers();
+            fetch(`/geo/api/items/?categoria=${categoryId || ''}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.features.forEach(feature => {
+                        var coords = feature.geometry.coordinates;
+                        var props = feature.properties;
+                        var popupContent = `
+                            <div class="marker-popup">
+                                <h3>${props.nombre}</h3>
+                                <p>${props.categoria}</p>
+                                ${props.url_foto ? `<img src='${props.url_foto}' alt='${props.nombre}' class='marker-image'>` : ''}
+                                <a href='${props.url_detalle}' class='btn btn-primary'>Ver detalles</a>
+                            </div>
+                        `;
+                        var markerPoint = L.marker([coords[1], coords[0]])
+                            .bindPopup(popupContent, {
+                                maxWidth: 300,
+                                minWidth: 200,
+                                className: 'custom-popup'
+                            });
+                        markers.addLayer(markerPoint);
+                    });
+                    map.addLayer(markers);
+                    setTimeout(function() { map.invalidateSize(); }, 100);
+                });
+        }
+        loadMarkers();
+        document.getElementById('category-filter').addEventListener('change', function(e) {
+            loadMarkers(e.target.value);
+        });
+    });
+</script>
+{% endblock %} 

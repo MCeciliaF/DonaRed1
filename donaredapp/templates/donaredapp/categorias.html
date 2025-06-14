@@ -1,0 +1,75 @@
+{% extends "donaredapp/base.html" %}
+{% load static %}
+{% block title %}DonaRed{% endblock %}
+{% block content %}
+
+<div class="categorias-main-layout">
+    <nav class="categorias-sidebar">
+        <ul>
+            {% for categoria_data in categorias_con_items %}
+                <li>
+                    <a href="#seccion-donaciones-{{ categoria_data.categoria.nombre|lower }}">
+                        {{ categoria_data.categoria.nombre }}
+                        {% if categoria_data.total_items > 0 %}
+                            <small>({{ categoria_data.total_items }})</small>
+                        {% endif %}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </nav>
+    <div class="categorias-content">
+        {% for categoria_data in categorias_con_items %}
+            <section id="seccion-donaciones-{{ categoria_data.categoria.nombre|lower }}">
+                {% if categoria_data.items %}
+                    {% include "donaredapp/tarjeta_categorias.html" with items=categoria_data.items titulo=categoria_data.categoria.nombre show_pagination=False show_search=False section_id=categoria_data.categoria.nombre|lower %}
+                    {% if categoria_data.total_items > categoria_data.items|length %}
+                        <div class="ver-mas-container">
+                            <a href="{% url 'donaredapp:index' %}?categoria={{ categoria_data.categoria.id }}#seccion-donaciones" class="ver-mas-btn">
+                                Ver todos los {{ categoria_data.categoria.nombre|lower }} ({{ categoria_data.total_items }}) →
+                            </a>
+                        </div>
+                    {% endif %}
+                {% endif %}
+                <div style="margin-bottom: 3rem;"></div>
+            </section>
+        {% endfor %}
+    </div>
+</div>
+
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const links = document.querySelectorAll('.categorias-sidebar a');
+    const sections = document.querySelectorAll('.categorias-content section');
+
+    function showSection(id) {
+        sections.forEach(sec => {
+            sec.classList.toggle('active', sec.id === id);
+        });
+        links.forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href').slice(1) === id);
+        });
+    }
+
+    links.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const id = this.getAttribute('href').slice(1);
+            showSection(id);
+            history.replaceState(null, '', '#' + id);
+        });
+    });
+
+    // Mostrar la sección activa según el hash de la URL al cargar
+    const hash = window.location.hash.replace('#', '');
+    if (hash) {
+        showSection(hash);
+    } else if (sections.length) {
+        showSection(sections[0].id);
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends 'donaredapp/base.html' %}
+{% load static %}
+
+{% block title %}Tarjeta de Item - DonaRed{% endblock %}
+
+{% block extra_css %}
+
+{% endblock %}
+
+{% block content %}
+<main class="container py-5">    
+    <div class="item-detalle">
+        <div class="item-header">
+            <h2>Donación Ofrecida</h2>
+        </div>        
+        {% if item %}
+            <h2 class="text-center mb-4">{{ item.nombre }}</h2>
+            
+            {% if item.imagen %}
+            <div class="item-imagen">
+                <img src="{{ item.imagen.url }}" alt="Imagen de {{ item.nombre }}" class="img-fluid">
+            </div>
+            {% endif %}
+
+            <div class="item-info">
+                <p><strong>Descripción:</strong> {{ item.descripcion }}</p>
+                <p class="domicilio-simplificado">
+                    <strong>Ubicación:</strong>
+                    {% with domicilio_parts=item.domicilio.split %}
+                        {{ domicilio_parts.0 }} {{ domicilio_parts.1 }}, {{ domicilio_parts.2 }}, {{ domicilio_parts.3 }}
+                    {% endwith %}
+                </p>
+                <p><strong>Donante:</strong> 
+                    {% if item.usuario %}
+                        <a href="{% url 'donaredapp:perfil_donante' username=item.usuario.username %}">{{ item.usuario.username }}</a>
+                    {% else %}
+                        Donante no disponible
+                    {% endif %}
+                </p>
+                <p>
+                    <strong>Calificación del Donante:</strong>
+                    {% if total_resenas_donante > 0 %}
+                        <span class="rating">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= promedio_calificacion_donante %}
+                                    ★
+                                {% else %}
+                                    ☆
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                        ({{ promedio_calificacion_donante|floatformat:1 }} de 5 estrellas - {{ total_resenas_donante }} reseñas)
+                    {% else %}
+                        Cero calificaciones
+                    {% endif %}
+                </p>
+            </div>
+            
+            <div class="btn-container">
+                {% if user.is_authenticated %}
+                    {% if user == item.usuario %}
+                    <a href="{% url 'donaredapp:editar_item' item_id=item.id %}" class="btn btn-outline-primary">Editar</a>
+                    <a href="{% url 'donaredapp:ocultar_item' item_id=item.id %}" class="btn btn-outline-danger">Dar de baja</a>
+                    {% else %}
+                        {% if user.profile.validado and not has_solicitud %}
+                        <a href="{% url 'donaredapp:pedir' item_id=item.id %}" class="btn btn-primary">Contactar donante</a>
+                        {% endif %}
+                        {% if solicitud_aceptada %}
+                        <p class="text-center w-100"><strong>Domicilio de entrega: </strong> {{ item.domicilio }}</p>
+                        <p class="text-center w-100"><strong>Móvil: </strong> {{ item.usuario.profile.movil }}</p>
+                        {% elif not user.profile.validado %}
+                        <p class="text-center w-100">Necesitas validar tu cuenta para contactar al donante</p>
+                        {% endif %}
+                    {% endif %}
+                {% else %}
+                <p class="text-center w-100">
+                    <a href="{% url 'donaredapp:registro' %}" class="btn btn-primary">Regístrate para contactar al donante</a>
+                </p>
+                {% endif %}
+            </div>
+        {% else %}
+            <p class="text-center">No existe ese item.</p>
+        {% endif %}
+        
+        <div class="btn-container">
+            <a href="{% url 'donaredapp:index' %}" class="btn btn-primary">Volver a inicio</a>
+        </div>
+    </div>
+</main>
+{% endblock %}

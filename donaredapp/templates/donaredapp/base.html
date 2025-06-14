@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}DonaRed{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&family=Orbitron:wght@600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'donaredapp/style.css' %}" />
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="brand logo-login">
+            <a href="{% url 'donaredapp:index' %}"><img src="{% static 'donaredapp/images/logoDonared.png' %}" alt="Logo" ></a>
+            <a href="{% url 'donaredapp:index' %}"><p>Donared</p></a>
+        </div>
+        <input type="checkbox" id="menu-toggle" class="menu-toggle">
+        <label for="menu-toggle" class="menu-icon">
+            <span></span>
+            <span></span>
+            <span></span>
+        </label>
+
+        <div class="nav-links">
+            {% if request.resolver_match.url_name == 'index' %}
+                <a href="#quienes-somos">¿Quiénes somos?</a>
+            {% else %}
+                <a href="{% url 'donaredapp:index' %}#quienes-somos">¿Quiénes somos?</a>
+            {% endif %}
+
+            <a href="{% url 'donaredapp:categorias' %}">Categorías</a>
+            <a href="/novedades/" class="nav-link">Novedades</a>
+            <a href="{% url 'geo:mapa' %}" class="nav-link">Mapa</a>
+
+
+            <div class="dropdown">
+                <a href="#">Mi cuenta<i class="fa fa-caret-down"></i></a>
+                <div class="dropdown-content">
+                    {% if user.is_authenticated %}
+                        <!-- Notificaciones -->
+                        <span class="nav-link">
+                            Hola, {{ user.username }}
+                            {% if hay_solicitudes_realizadas or hay_pedidos_recibidos %}
+                                <i class="fas fa-bell text-warning ms-1"></i>
+                            {% endif %}
+                        </span>
+                        
+                        <!-- Contenido principal -->
+                        <div class="perfil_submenu">
+                        <a href="#">Perfil</a>
+                        <ul class="submenu">
+                            <li><a href="{% url 'donaredapp:perfil' %}" class="dropdown_perfil">Mi perfil</a></li>
+                            <li><a href="{% url 'donaredapp:publicar' %}" class="dropdown_perfil">Publicar donación</a></li>
+                            <li><a href="{% url 'donaredapp:solicitudes' %}" class="dropdown_perfil">Mis solicitudes
+                                {% if hay_solicitudes_realizadas %}
+                                <i class="fas fa-circle text-warning ms-1"></i> <!-- danger: rojo, para rechazada. success: verde, para aceptada  -->
+                            {% endif %}
+                            </a></li>
+                            <li><a href="{% url 'donaredapp:donaciones' %}" class="dropdown_perfil">Mis Donaciones
+                                {% if hay_pedidos_recibidos %}
+                                <i class="fas fa-circle text-warning ms-1"></i> <!-- danger: rojo, para rechazada. success: verde, para aceptada  -->
+                            {% endif %}
+                            </a></li>
+                            <li><a href="{% url 'donaredapp:logout' %}" class="dropdown_perfil">Cerrar Sesión</a></li>
+                        </ul>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'donaredapp:login' %}" class="btn-login">Iniciar sesión</a>
+                        <a href="{% url 'donaredapp:registro' %}" class="dropdown_usuario">Registrarse</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+
+    {% block content %}{% endblock %}
+
+
+    <!-- Footer con mensaje -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="link logo-footer">
+                <ul>
+                    <li><a href="{% url 'donaredapp:index' %}"><img src="{% static 'donaredapp/images/logoDonared.png' %}" alt="Logo" ></a>
+                        <a href="{% url 'donaredapp:index' %}"><p>Donared</p></a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="link">
+                <h3>REDES SOCIALES</h3>
+                <ul class="link-redes">
+                    <li><a href="https://www.facebook.com/" target="_blank"><i class="fa-brands fa-facebook fa-lg"></i></a></li>
+                    <li><a href="https://twitter.com/" target="_blank"><i class="fa-brands fa-x-twitter fa-lg"></i></a></li>                               
+                    <li><a href="https://www.instagram.com/" target="_blank"><i class="fa-brands fa-instagram fa-lg"></i></a></li>                    
+                </ul>
+            </div>
+            <div class="link">
+                <h3>CONTACTO</h3>
+                <ul>
+                    <li><a href="mailto:DonaRed@gmail.com"><i class="fa-regular fa-envelope"></i> DonaRed@gmail.com</a></li>
+                    <li><a href="https://api.whatsapp.com/send/?phone=__"><i class="fa-brands fa-whatsapp"></i> 011-56912478</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-copy">
+            <p><small>&copy; 2025 <b>DonaRed</b> - Todos los Derechos Reservados</small></p>
+        </div>
+    </footer>
+
+    <!-- Script de prueba cargar mas imagenes -->
+    <!-- <script src="js/donaciones.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> 
+    {% block extra_js %}{% endblock %} 
+</body>
+</html> 

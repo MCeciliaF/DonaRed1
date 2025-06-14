@@ -1,0 +1,53 @@
+{% extends 'donaredapp/base.html' %}
+{% load static %}
+
+{% block title %}Iniciar Sesión - DonaredApp{% endblock %}
+
+{% block content %}
+<section>
+    <main id="main-login" class="main-login">     
+        <div class="formulario-container">   
+            <form method="post"> 
+            {% csrf_token %}           
+                <h2>Donared <br>Iniciar Sesión</h2>           
+                <div>
+                    <label for="id_username">Nombre de usuario:</label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                        <div class="alert alert-danger">{{ form.username.errors }}</div>
+                    {% endif %}
+                </div>
+                <!-- Password with checkbox toggle -->
+                <div>
+                    <label for="id_password">Contraseña:</label>
+                    {{ form.password }}
+                    <br>
+                    <input type="checkbox" id="show_password" onchange="togglePasswordCheckbox('id_password', this)">
+                    <label for="show_password">Mostrar contraseña</label>
+                    {% if form.password.errors %}
+                        <div class="alert alert-danger">{{ form.password.errors }}</div>
+                    {% endif %}
+                </div>
+                <div>
+                    <input class="boton" type="submit" value="Iniciar Sesión">
+                </div>
+                <div>
+                    <span>¿Olvidaste tu contraseña?</span>
+                    <a id="recuperarCuenta" class="recuperarCuenta" href="{% url 'donaredapp:recuperapass' %}">Recuperala aquí</a>
+                </div>
+                <div>
+                    <span>¿No tenés una cuenta?</span>
+                    <a id="registrarse" class="registrarse" href="{% url 'donaredapp:registro' %}">Registrarse aquí</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</section>
+
+<script>
+function togglePasswordCheckbox(fieldId, checkbox) {
+    const field = document.getElementById(fieldId);
+    field.type = checkbox.checked ? 'text' : 'password';
+}
+</script>
+{% endblock %}

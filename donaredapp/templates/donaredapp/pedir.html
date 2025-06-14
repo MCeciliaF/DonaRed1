@@ -1,0 +1,59 @@
+{% extends 'donaredapp/base.html' %}
+
+{% block title %}Contactar Donante - DonaRed{% endblock %}
+
+{% block extra_css %}
+
+{% endblock %}
+
+{% block content %}
+<section>
+    <main class="container py-5">
+        <div class="contacto-container">
+            <div class="contacto-header">
+                <h2>Contactar al Donante</h2>
+            </div>
+
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li class="{{ message.tags }}">
+                    {% if "Solicitud enviada correctamente" in message %}
+                        <div class="mensaje-exito">{{ message }}</div>
+                    {% else %}
+                        {{ message }}
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            <div class="item-info">
+                <h2>Item: {{ item.nombre }}</h2>
+                <p><strong>Descripción:</strong> {{ item.descripcion }}</p>
+            </div>
+
+            <div class="donante-info">
+                <h3>Información del Donante</h3>
+                <p><strong>Nombre:</strong> {{ donante.first_name }} {{ donante.last_name }}</p>
+                <p><strong>Email:</strong> {{ donante.email }}</p>
+                {% if donante.profile.movil %}
+                <p>
+                    <strong>Móvil:</strong> {{ donante.profile.movil.as_international }}
+                    <a href="https://wa.me/{{ donante.profile.movil.as_e164|cut:'+' }}" target="_blank" class="whatsapp-btn">
+                        <i class="fab fa-whatsapp"></i> Contactar por WhatsApp
+                    </a>
+                </p>
+                {% endif %}
+                <div class="mensaje-contacto">
+                    Ponete en contacto con el donante para concretar la donación
+                </div>
+            </div>    
+
+            <div class="btn-container">
+                <a href="{% url 'donaredapp:index' %}" class="btn-volver">Volver a Inicio</a>
+            </div>
+        </div>
+    </main>
+</section>
+{% endblock %}

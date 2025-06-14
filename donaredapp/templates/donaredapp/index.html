@@ -1,0 +1,136 @@
+{% extends 'donaredapp/base.html' %}
+{% load static %}
+
+{% block title %}DonaRed{% endblock %}
+
+{% block content %}
+
+<!-- Categorías     -->
+<section class="categorias">
+    <div class="categoria-item">
+    <a href="?categoria={{ categorias_dict.ropa }}#seccion-donaciones"><i class="fa-solid fa-shirt 2x"></i>                
+    <p>Ropa</p>
+    </a>
+    </div>
+    <div class="categoria-item">
+        <a href="?categoria={{ categorias_dict.libros }}#seccion-donaciones">
+            <i class="fa-solid fa-book"></i>
+            <p>Libros</p>
+        </a>
+    </div>
+    <div class="categoria-item">
+        <a href="?categoria={{ categorias_dict.tecnologia }}#seccion-donaciones">
+            <i class="fa-solid fa-computer"></i>
+            <p>Tecnología</p>
+        </a>
+    </div>
+    <div class="categoria-item">
+        <a href="?categoria={{ categorias_dict.herramientas }}#seccion-donaciones">
+            <i class="fa-solid fa-screwdriver-wrench"></i>
+            <p>Herramientas</p>
+        </a>
+    </div>
+    <div class="categoria-item">
+        <a href="?categoria={{ categorias_dict.bicicletas }}#seccion-donaciones">
+            <i class="fa-solid fa-bicycle"></i>
+            <p>Bicicletas</p>
+        </a>
+    </div>
+    <div class="categoria-item">
+        <a href="?categoria={{ categorias_dict.muebles }}#seccion-donaciones">
+            <i class="fa-solid fa-couch"></i>
+            <p>Muebles</p>
+        </a>
+    </div>
+</section>
+
+<!-- Hero -->
+<section class="hero"> 
+    <div class="hero-text">
+        <h1>Doná lo que ya no usás. <br>Ayudá a quienes más lo necesitan</h1>
+        <p>Un objeto olvidado puede ser un gran cambio para otra persona.</p>   
+        <div class="hero-buttons">
+            {% if user.is_authenticated %}
+            <a href="{% url 'donaredapp:publicar' %}" class="btn-donar">Quiero Donar</a>
+            {% else %}
+            <a href="{% url 'donaredapp:login' %}" class="btn-donar">Iniciá sesión o Registrate para empezar a donar</a>
+            {% endif %}
+            <a href="{% url 'donaredapp:categorias' %}" class="btn-donar">Ver donaciones</a>
+        </div>      
+    </div>
+    <div class="hero-image">
+        <img src="{% static 'donaredapp/images/foto_tapa.png' %}" alt="imagen-chica">
+    </div>
+</section>
+
+<!-- ¿Cómo funciona? -->
+<section class="como-funciona">
+    <div class="como-funciona-contenido">
+        <h2>¿Cómo funciona?</h2>
+    <div class="pasos">
+        <div class="paso">
+            <p class="emoji"><i class="fa-solid fa-face-smile"></i></p>
+            <h3>Elige qué donar</h3>
+            <p>Busca en casa cosas que están en buen estado y pueden ser útiles</p>
+        </div>
+
+        <div class="paso">
+            <p class="emoji"><i class="fa-solid fa-circle-up"></i></p>
+            <h3>Publica tu donación</h3>
+            <p>Carga una foto y una breve descripción en minutos</p>
+        </div>
+
+        <div class="paso">
+            <p class="emoji"><i class="fa-solid fa-hand-holding-heart"></i></p>
+            <h3>Alguien lo recibe</h3>
+            <p>Una persona que lo necesita se pondrá en contacto para coordinar la entrega</p>
+        </div>
+    </div>
+    
+    </div>
+</section>
+
+<!-- Inicio Cards donaciones-->
+<div id="seccion-donaciones"> 
+{% include "donaredapp/tarjeta_categorias.html" with items=items_recientes titulo="Últimas donaciones" show_pagination=True show_search=True section_id="default" %}
+</div>
+
+<!-- Sección de ¿Quiénes somos? -->
+<section class="quienes_somos" id="quienes-somos"> 
+    <div class="quienes_somos-contenido">
+        <picture class="quienes_somos-joven">
+            <source media="(min-width: 650px)" srcset="{% static 'donaredapp/images/dona_mediana.jpg' %}">
+            <source media="(min-width: 465px)" srcset="{% static 'donaredapp/images/dona_chica.jpg' %}">
+            <img src="{% static 'donaredapp/images/dona_grande.jpg' %}" class="quienes_somos-img" alt="DonaRed equipo">
+            <!--style="width:100% "-->
+        </picture>
+        <!--<img src="/images/dona_grande.jpg" class="imagen_joven" alt="imagen joven">-->
+        <div class="quienes_somos-texto">
+            <h2>¿QUIENES SOMOS?</h2>
+  <p>
+    En <strong>DonaRed</strong> creemos que todo lo que ya no usás puede tener una nueva vida en manos de alguien que lo necesita. 
+    Somos una plataforma solidaria que conecta a personas que quieren donar con quienes están buscando una mano amiga.
+  </p>
+  <p>
+    Nuestro propósito es simple pero poderoso: evitar que objetos útiles terminen en la basura y, en cambio, se transformen en oportunidades.
+    Ropa, herramientas, juguetes, muebles, tecnología… lo que ya no te sirve, puede hacer una gran diferencia en la vida de otra persona.
+  </p>
+  <p>
+    Facilitamos el encuentro entre quienes quieren dar y quienes necesitan recibir, sin dinero de por medio y sin importar en qué parte del país estén. 
+    Apostamos a un modelo de ayuda directa, basado en la confianza, el respeto y el cuidado del planeta.
+  </p>
+  <p>
+    En DonaRed, <strong>cada donación</strong> es un acto de cambio.<br>
+    <strong>Cada conexión</strong>, una posibilidad.<br>
+    <strong>Cada persona</strong>, parte de algo más grande.
+  </p>
+  <p>
+    Sumate a esta red solidaria.<br>
+    <strong>Doná, conectá, cambiá vidas.</strong>
+  </p>
+</section>
+        </div>            
+    </div>     
+</section>
+
+{% endblock %}
